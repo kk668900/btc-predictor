@@ -1,3 +1,35 @@
+    f"{test_acc * 100:.1f}%" if not np.isnan(test_acc) else "暂无",
+)
+
+direction = (
+    "偏多" if combined_up >= 0.56
+    else ("偏空" if combined_up <= 0.44 else "中性 / 观望")
+)
+st.subheader(f"未来 1 小时：{direction}")
+st.write(
+    f"模型方向概率：上涨 **{up_prob * 100:.1f}%**，下跌 **{down_prob * 100:.1f}%**。"
+    f"加入技术与新闻的启发式调整后，上涨估算为 **{combined_up * 100:.1f}%**。"
+)
+st.caption(
+    f"粗略波动参考区间（不是价格目标或保证）：{money(low_est)} 至 "
+    f"{money(high_est)}。新闻情绪评分：{news_score:+.2f}；"
+    f"抓取到 {len(news)} 条标题。"
+)
+
+tab1, tab2, tab3, tab4 = st.tabs(
+    ["行情图表", "指标与新闻", "模拟交易", "模型说明"]
+)
+
+with tab1:
+    chart_df = df.tail(240)
+    fig = go.Figure(data=[
+        go.Candlestick(
+            x=chart_df["time"],
+            open=chart_df["open"],
+            high=chart_df["high"],
+            low=chart_df["low"],
+            close=chart_df["close"],
+            name="BTC/USD",
         )
     ])
     fig.update_layout(
